@@ -45,7 +45,7 @@
 % \affil[1]{University of Wisconsin-Madison, Madison, WI, United States}
 % \affil[2]{University of California, San Diego, CA, United States}
 % \affil[3]{Tel-Aviv University, Tel-Aviv, Israel}
- \author{\bf Anonymous CogSci Submission}
+\author{\bf Anonymous CogSci Submission}
 \begin{document}
 \makeatletter
 \let\@oldmaketitle\@maketitle% Store \@maketitle
@@ -61,12 +61,12 @@
 
 \begin{abstract}
 
-Human visual understanding is not unitary, but spans multiple levels of abstraction. 
-For example, people know that real-world objects possess both distinctive features and features shared with other members of the same category. 
-One of the most salient manifestations of this ability is in the domain of sketch comprehension: while one sketch may be evocative of a general category such as ``flower'' without resembling any particular flower, another sketch may faithfully depict a specific rose. 
-To what degree are current vision algorithms sensitive to such variation in the degree of semantic abstraction expressed in sketches?
-
-We measured a sketch’s \textit{genericity} by its ability to selectively evoke its target category but not strongly evoke any exemplar within that category; similarly, we measured a sketch’s \textit{specificity} as its ability to evoke the exemplar it was meant to depict but not other exemplars. Using these metrics and dataset
+People can understand sketches that vary in visual abstraction --- from detailed illustrations to schematic icons. 
+To what degree are current vision algorithms sensitive to such variation when encoding their meaning? 
+We first obtained $>80K$ human-generated sketches ($N$=5,563 participants) produced under different time limits (4s, 8s, 16s, 32s) and AI-generated sketches \cite{vinker2022clipasso} produced under different ink limits (8, 16, 32 strokes)  of 2048 real-world objects spanning 128 categories from the THINGS database \cite{hebart2019things}.
+We then evaluated how 13 state-of-the-art vision algorithms varying in architecture and training represented the meaning of these sketches both at the category and exemplar levels without additional training.
+We found that these models were generally sensitive to variation in visual abstraction, although some models were substantially more sensitive than others.
+Together, these findings suggest promising avenues for building better models of human visual abstraction. 
 
 \textbf{Keywords:} 
 concepts; drawing; perception; computer vision; benchmark
@@ -360,7 +360,16 @@ and
 
 \subsection{Results}
 
+\subsection{something about classification}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=.5\textwidth]{figures/VAB_consistency.pdf}
+    \caption{How consistent?}
+    \label{fig:consistency}
+\end{figure}
+
+\subsection{something about finer metrics}
 
 The full picture of every model being benchmarked along with specificity and genericity metrics derived at early, intermediate, and late stages of processing can be seen in figure \ref{fig:all_models}. Certain general trends can be observed, such as a greater processing of abstraction across the time-restricted conditions in deeper layers of most models captured by a significant positive interaction between model depth $\times$ timing condition (genericity: $\beta_{model\_depth \times time} = $1.69, $t =$21.74, $p<$.05; specificity:$\beta_{model\_depth \times time} = $3.24, $t =$43.05, $p<$.05 ). This aligns with the notion that deeper stages of processing in deep neural networks represent their input in a more categorical manner abstracted away from the specific image statistics of the input \cite{yamins2014performance,khaligh2014deep,rajalingham2018large}. 
 
