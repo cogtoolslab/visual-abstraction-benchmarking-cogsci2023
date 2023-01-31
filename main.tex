@@ -45,17 +45,17 @@
 % \affil[1]{University of Wisconsin-Madison, Madison, WI, United States}
 % \affil[2]{University of California, San Diego, CA, United States}
 % \affil[3]{Tel-Aviv University, Tel-Aviv, Israel}
-\author{\bf Anonymous CogSci Submission}
+% \author{\bf Anonymous CogSci Submission}
 \begin{document}
 \makeatletter
 \let\@oldmaketitle\@maketitle% Store \@maketitle
-\renewcommand{\@maketitle}{\@oldmaketitle% 
+% \renewcommand{\@maketitle}{\@oldmaketitle% 
 
-\includegraphics[width=.92\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
-\captionsetup{width=0.92\textwidth}
- \captionof{figure}{\footnotesize{Example sketches of objects from the THINGS128 dataset produced under different time limits.}}\
+% \includegraphics[width=.92\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
+% \captionsetup{width=0.92\textwidth}
+%  \captionof{figure}{\footnotesize{Example sketches of objects from the THINGS128 dataset produced under different time limits.}}\
 
-}
+% }
 \makeatother
 \maketitle
 
@@ -74,10 +74,13 @@ concepts; drawing; perception; computer vision; benchmark
 
 
 \section{Introduction}
-Humans have the ability to visually communicate their knowledge of the world—objects, scenes, and events—at varying levels of abstraction. 
-Famously, the Spanish artist Picasso could both depict scenes with incredible detail and attention towards preserving the likeness to the real world, as well as depict concepts like ``dog'' with only a single stroke by omitting much of the information that would help the sketch share a visual resemblance to a real dog. 
+Humans can communicate their visual knowledge at varying levels of abstraction
+
+% of the world—objects, scenes, and events—at varying levels of abstraction. 
+% Humans have the ability to visually communicate their knowledge of the world—objects, scenes, and events—at varying levels of abstraction. 
+% Famously, the Spanish artist Picasso could both depict scenes with incredible detail and attention towards preserving the likeness to the real world, as well as depict concepts like ``dog'' with only a single stroke by omitting much of the information that would help the sketch share a visual resemblance to a real dog. 
 Despite the striking differences in the level of detail and fidelity to the real world, both kinds of depictions can be understood and recognized by those who view them. 
-This notion that knowledge can be flexibly expressed and comprehended at many such levels of abstraction, while raised in prior work  \cite{viola2017pondering, chen2020foundations,mccloud1998understanding}, has evaded a generalized formal account. 
+This notion that knowledge can be flexibly expressed and understood at many such levels of abstraction, while raised in prior work  \cite{viola2017pondering, chen2020foundations,mccloud1998understanding}, has evaded a generalized formal account. 
 As a consequence, it has remained unclear to what degree modern vision algorithms can support varied representations of the same underlying concept spanning multiple degrees of abstraction.
 
 % While many might agree that knowledge can be flexibly expressed and comprehended at such different levels of abstraction, a formal account of visual abstraction has remained largely absent in the .
@@ -244,7 +247,7 @@ SWSL~\cite{} &  ResNet-50  & semi-supervised & ImageNet + 1B-Targeted \\
 %     \item \textbf{Specificity} Secondly, for an abstract sketch, the measure should not provide strong evidence for \textit{any} specific exemplar of \textit{any} concept either.\\
 % \end{itemize}
 
-We manually defined and separated each vision model into three stages: early, intermediate, and late. These stages are roughly equivalent to the first 25\% of the layers, the middle 50\% of the layers, and the final 25\% of the layers. 
+% We manually defined and separated each vision model into three stages: early, intermediate, and late. These stages are roughly equivalent to the first 25\% of the layers, the middle 50\% of the layers, and the final 25\% of the layers. 
 % See Appendix (?) for the exact split of stages in each model. 
 Given an image, we then extracted its latent features at the end of each of these stages as the early, intermediate, and late representation.
 
@@ -277,85 +280,70 @@ Formally, we have
 where $\sigma$ is the softmax function and $Similarity$ is the cosine similarity.
 
 % With the probability distributions ready,
-We now detail the formulation of the two metrics.
+% We now detail the formulation of the two metrics.
 
-% To ground these desiderata we first extract deep neural network embeddings for the sketch, which we will refer to as $\textit{s}$, and for each of the 2048 reference images used for the drawing task, which we will refer to as $\textit{I}$.
-% Next, we compute the cosine similarities between $s$ and every photo in $I$ and normalize the resulting list of similarity values using the softmax function. We refer to the resulting probability distribution as $p(s)_{instance}$
-% $$p(s)_{instance} = \sigma({S_c(s,{I})})$$
-% We also compute the normalized average similarity \textit{per category} as follows and refer to the resulting distribution as $p(s)_{concept}$
-% $$p(s)_{concept} = \sigma(\frac{1}{16} \sum^{C}_{ c} {S_c(s,{I}_{\in c})})$$
 
-% Both $p(s)_{instance}$ and $p(s)_{concept}$ are probability distributions that indicate how much each sketch evokes each exemplar and, on average, each concept in our dataset respectively.
-% We can also imagine \textit{idealized} PDFs for both these PDFs, where all the probability mass is on the exemplar that was the referent when the sketch was made or all the mass on the concept that was prompted when the sketch was made. We refer to these idealized probability distributions as $\delta_{instance}$ and $\delta_{concept}$ respectively. $\delta_{instance}$ can be viewed as the ideal pattern of similarities that would image if a sketch was a perfectly detailed reproduction of a specific exemplar. $\delta_{concept}$ on the other hand is the ideal pattern of similarities that would result from a sketch that is the ideal prototype of the concept, such that it evokes that concept and that concept alone in an observer.
+% \textbf{Specificity score.} 
+% % As mentioned in the two desiderata, a highly abstract sketch should not strongly correspond to its photo exemplar. Therefore, 
+% The specificity metric $L_{Specificity}$ measures how strongly a sketch matches its corresponding photo exemplar, treating all other exemplars as distractors. We formulated the problem as selecting the correct exemplar out of the 2048 photos. Given the sketch $s$ and its correct exemplar $e_{true}^{(s)}\in E$, the metric is computed as the reciprocal of the cross entropy between the one-hot target distribution $\delta^{(s)}$ and the probability distribution $P_{E}^{(s)}$,
 
-% In order to compute the genericity of a sketch, we measure to what degree it evokes any specific exemplar within its concept category relative to how well it evokes the correct concept.
-% The generericty $G$ of sketch $s$ can be defined as -
+% \begin{equation}\label{eq:specificity}
+%     L_{Specificity}^{(s)} =-\frac{1}{\sum_{e\in E}{\delta^{(s)}(e) \log{[P_{E}^{(s)}(e)}]}},
+% \end{equation}
 
-% $$G(s) = \frac{H(\sigma(S_c(s,{I}_{\in concept(s)})))}{H(p(s)_{concept},\delta_{concept}(s))}$$
-
-% Here, the numerator is the entropy of the pattern of similarities between the sketch and all the exemplar images belonging to the concept the sketch is of. The denominator is the cross entropy between the empirical and idealized concept level PDFs. The smaller this term, the more abstract the given sketch is.
-
-\textbf{Specificity score.} 
-% As mentioned in the two desiderata, a highly abstract sketch should not strongly correspond to its photo exemplar. Therefore, 
-The specificity metric $L_{Specificity}$ measures how strongly a sketch matches its corresponding photo exemplar, treating all other exemplars as distractors. We formulated the problem as selecting the correct exemplar out of the 2048 photos. Given the sketch $s$ and its correct exemplar $e_{true}^{(s)}\in E$, the metric is computed as the reciprocal of the cross entropy between the one-hot target distribution $\delta^{(s)}$ and the probability distribution $P_{E}^{(s)}$,
-
-\begin{equation}\label{eq:specificity}
-    L_{Specificity}^{(s)} =-\frac{1}{\sum_{e\in E}{\delta^{(s)}(e) \log{[P_{E}^{(s)}(e)}]}},
-\end{equation}
-
-where 
-\begin{equation}\label{eq:one hot}
-    \delta^{(s)}(e) :=
-    \begin{cases}
-1 &\text{if } e = e_{true}^{(s)}, \\
-0 &\text{if } e \neq e_{true}^{(s)}.
-\end{cases}
-\end{equation}
+% where 
+% \begin{equation}\label{eq:one hot}
+%     \delta^{(s)}(e) :=
+%     \begin{cases}
+% 1 &\text{if } e = e_{true}^{(s)}, \\
+% 0 &\text{if } e \neq e_{true}^{(s)}.
+% \end{cases}
+% \end{equation}
 
 
 
-% To compute the specificity of a sketch, we measure the KL-divergence between the idealized and empirical instance level distributions. The larger this term the less abstract a sketch is.
+% % To compute the specificity of a sketch, we measure the KL-divergence between the idealized and empirical instance level distributions. The larger this term the less abstract a sketch is.
 
-% $$S(s) = D_{KL}(p(s)_{instance},\delta_{instance}(s))$$
-% \textbf{Results}
-
-
-
-\textbf{Genericity.} 
-The genericity metric $L_{Genericity}$ measures how strongly a sketch corresponds to a concept without evoking any particular exemplar within the concept category.
-This can be formalized as a ratio between the likelihood of assigning the drawing to the photo that was the referent during the human production experiment and the likelihood of assigning the drawing to the correct category. The smaller this number is, the less likely one is to correctly assign the drawing to the exemplar relative to correctly assigning it to the concept. This would be a drawing that evokes a concept more generally without evoking a particular exemplar.
-
-Given the sketch $s$, its correct exemplar $e_{true}^{(s)}\in E$ and its correct concept $c_{true}^{(s)} \in C$, the metric is computed as the ratio between the cross-entropy between the one-hot target distribution $\delta_{C}^{(s)}$ and probability distribution $P_{C}^_{(s)}$ and the cross-entropy between the one-hot target distribution $\delta_{E}^{(s)}$ and probability distribution $P_{E}^{(s)}$,
-
-\begin{equation}\label{eq:genericity}
-    L_{Genericity}^{(s)} =-\frac{\sum_{e\in E}{\delta_{E}^{(s)}(e) \log{[P_{E}^{(s)}(e)}]}}{\sum_{c\in C}{\delta_{C}^{(s)}(c)  \log{[P_{C}^{(s)}(c)}]}},
-\end{equation}
-
-where 
-\begin{equation}\label{eq:one hot}
-    \delta_{E}^{(s)}(e) :=
-    \begin{cases}
-1 &\text{if } e = e_{true}^{(s)}, \\
-0 &\text{if } e \neq e_{true}^{(s)},
-\end{cases}
-\end{equation}
-and
-\begin{equation}\label{eq:one hot}
-    \delta_{C}^{(s)}(c) :=
-    \begin{cases}
-1 &\text{if } c = c_{true}^{(s)}, \\
-0 &\text{if } c \neq c_{true}^{(s)}.
-\end{cases}
-\end{equation}
+% % $$S(s) = D_{KL}(p(s)_{instance},\delta_{instance}(s))$$
+% % \textbf{Results}
 
 
 
-\begin{figure*}[ht!!]
-    \centering
-    \includegraphics[width=.95\textwidth]{figures/VAB_all_mod.pdf}
-    \caption{Average genericity and specificity scores for sketches made in each timing condition based on latent features extracted from each model in our model suite at early, intermediate, and late stages of processing. }
-    \label{fig:all_models}
-\end{figure*}
+% \textbf{Genericity.} 
+% The genericity metric $L_{Genericity}$ measures how strongly a sketch corresponds to a concept without evoking any particular exemplar within the concept category.
+% This can be formalized as a ratio between the likelihood of assigning the drawing to the photo that was the referent during the human production experiment and the likelihood of assigning the drawing to the correct category. The smaller this number is, the less likely one is to correctly assign the drawing to the exemplar relative to correctly assigning it to the concept. This would be a drawing that evokes a concept more generally without evoking a particular exemplar.
+
+% Given the sketch $s$, its correct exemplar $e_{true}^{(s)}\in E$ and its correct concept $c_{true}^{(s)} \in C$, the metric is computed as the ratio between the cross-entropy between the one-hot target distribution $\delta_{C}^{(s)}$ and probability distribution $P_{C}^_{(s)}$ and the cross-entropy between the one-hot target distribution $\delta_{E}^{(s)}$ and probability distribution $P_{E}^{(s)}$,
+
+% \begin{equation}\label{eq:genericity}
+%     L_{Genericity}^{(s)} =-\frac{\sum_{e\in E}{\delta_{E}^{(s)}(e) \log{[P_{E}^{(s)}(e)}]}}{\sum_{c\in C}{\delta_{C}^{(s)}(c)  \log{[P_{C}^{(s)}(c)}]}},
+% \end{equation}
+
+% where 
+% \begin{equation}\label{eq:one hot}
+%     \delta_{E}^{(s)}(e) :=
+%     \begin{cases}
+% 1 &\text{if } e = e_{true}^{(s)}, \\
+% 0 &\text{if } e \neq e_{true}^{(s)},
+% \end{cases}
+% \end{equation}
+% and
+% \begin{equation}\label{eq:one hot}
+%     \delta_{C}^{(s)}(c) :=
+%     \begin{cases}
+% 1 &\text{if } c = c_{true}^{(s)}, \\
+% 0 &\text{if } c \neq c_{true}^{(s)}.
+% \end{cases}
+% \end{equation}
+
+
+
+% \begin{figure*}[ht!!]
+%     \centering
+%     \includegraphics[width=.95\textwidth]{figures/VAB_all_mod.pdf}
+%     \caption{Average genericity and specificity scores for sketches made in each timing condition based on latent features extracted from each model in our model suite at early, intermediate, and late stages of processing. }
+%     \label{fig:all_models}
+% \end{figure*}
 
 
 \subsection{Results}
