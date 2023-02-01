@@ -147,10 +147,7 @@ and (2) to evaluate how well various state-of-the-art vision models represent se
     \centering
     \includegraphics[width= 1\linewidth]{figures/VAB_task.pdf}
     \caption{A: The current study included a total of 2048 visual objects spanning 128 visual concepts from the THINGS dataset \cite{hebart2019things} B:
-    Both humans and an AI system, \textit{CLIPasso} \cite{vinker2022clipasso}, generated sketches of concrete visual objects under different production constraints. Human participants were asked to create a sketch of the abstract concept represented in the photograph they were shown under a certain time limit (i.e., 4s, 8s, 16s, and 32s). \textit{CLIPasso} 
-    
-    used the latent neural features of the image to guide a stroke-based rasterizer. C: Different sources of pressure, limited time in the case of humans and limited number of strokes in the case of the machine, led to sparser drawings in the more pressure-intensive conditions.}
-
+    Both humans and an AI system, \textit{CLIPasso} \cite{vinker2022clipasso}, generated sketches of concrete visual objects under different production constraints. Human participants were asked to create a sketch of the abstract concept represented in a photograph under a certain time limit (i.e., 4s, 8s, 16s, and 32s). \textit{CLIPasso} created a sketch based on the photograph using a certain number of strokes (i.e., 8 strokes, 16 strokes, 32 strokes).}
     \label{fig:trial}
 \end{figure*}
 
@@ -181,12 +178,7 @@ Prior to drawing trials, participants were provided specific instructions that t
 Additionally, they were instructed not to include any background context (e.g., grass in a drawing of a ``horse''), arrows, or text.
 Participants also completed a practice trial before the test drawing trials to familiarize themselves to the drawing platform.
 
-\begin{figure*}
-    \centering
-    \includegraphics[width= 1\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
-    \caption{Example sketches of objects from the THINGS128 dataset produced under different time limits.}
-    \label{fig:gallery}
-\end{figure*}
+
 
 \subsection{Machine generated sketches}
 For the automatic generation of sketches from images at multiple levels of abstraction, we incorporated CLIPasso \cite{vinker2022clipasso}.
@@ -203,6 +195,13 @@ For each image in the $2024$ set, we generate sketches at four levels of abstrac
 %     \caption{Machine generated sketches of a photograph at low (32 strokes), medium (16 strokes), and high (8 strokes) levels of abstraction}
 %     \label{fig:clipasso_ex}
 % \end{figure}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width= 1\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
+    \caption{Example sketches of objects from the THINGS128 dataset produced under different time limits.}
+    \label{fig:gallery}
+\end{figure*}
 
 \subsubsection{Results}
 We collected over 84,000 unique drawings of the THINGS128 dataset. We first tested whether there were any meaningful differences between the sketches of the same concept across the different timing conditions.
