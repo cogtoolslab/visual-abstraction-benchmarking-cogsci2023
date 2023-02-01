@@ -2,6 +2,8 @@
 
 
 % Modified: Niels Taatgen (taatgen@cmu.edu) 10/24/2006
+% Modified: Roger Levy (rplevy@mit.edu) 11/8/2018, borrowing from
+% ACL .sty files to add author anonymity switch.
 
 % Place this in a file called cogsci.sty in the TeX search path.
 % (Placing it in the same directory as the paper should also work.)
@@ -41,7 +43,17 @@
 %         Author 3 \\ Address line \\ ... \\ Address line}
 
 
-\typeout{Conference Style for COGSCI -- last modified October 24, 2006}
+
+\newif\ifcogscifinal
+\cogscifinalfalse
+\def\cogscifinalcopy{\global\cogscifinaltrue}
+
+\newif\iftwopagesummary
+\twopagesummaryfalse
+\def\twopagesummarysubmission{\global\twopagesummarytrue}
+
+
+\typeout{Conference Style for COGSCI -- last modified December 31, 2018}
 
 
 % Physical page layout:
@@ -102,6 +114,22 @@
 % save space --- suggested by drstrip@sandia-2
 \def\addcontentsline#1#2#3{}
 
+% adding titlebox
+\newlength\titlebox
+\setlength\titlebox{5cm}
+% Author anonymized for submission version
+\newcommand\outauthor{
+    \begin{tabular}[t]{c}
+	\ifcogscifinal
+	     \bf\@author
+	\else \iftwopagesummary
+             \bf\@author
+        \else
+             {\bf \large Anonymous CogSci submission} % Avoiding common accidental de-anonymization issue. --MM
+        \fi
+	\fi
+    \end{tabular}}
+
 
 % Title stuff, taken from deproc.
 \def\maketitle{\par
@@ -114,7 +142,7 @@
  \let\maketitle\relax \let\@maketitle\relax
  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
 \def\@maketitle%
-    {%
+    {\vbox to \titlebox{
       \linewidth\hsize
       \centering
           {\LARGE\bf \@title \par} \vskip 1em%
@@ -126,11 +154,12 @@
            \hbox to \linewidth\bgroup \hfil\hfil
            \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}}
             \hbox to \linewidth\bgroup \hfil\hfil
-            \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\@author 
-            \end{tabular}\hss\egroup
+            \hbox to 0pt\bgroup\hss %\begin{tabular}[t]{c}\@author 
+            %\end{tabular}
+            \outauthor\hss\egroup
             \hfil\hfil\egroup}
           \vskip 2em
-          }
+          }}
 
 
 % Abstract
@@ -214,6 +243,8 @@
 \def\LARGE{\@setsize\LARGE{17pt}\xivpt\@xivpt}
 \def\huge{\@setsize\huge{20pt}\xviipt\@xviipt}
 \def\Huge{\@setsize\Huge{23pt}\xxpt\@xxpt}
+
+
 
 
 %end COGSCI.STY

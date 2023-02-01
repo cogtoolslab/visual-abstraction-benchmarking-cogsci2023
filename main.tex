@@ -30,6 +30,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\hyphenpenalty=1000
 
 \title{Evaluating machine comprehension of sketch meaning at different levels of abstraction}
  
@@ -47,8 +48,8 @@
 % \affil[3]{Tel-Aviv University, Tel-Aviv, Israel}
 % \author{\bf Anonymous CogSci Submission}
 \begin{document}
-\makeatletter
-\let\@oldmaketitle\@maketitle% Store \@maketitle
+% \makeatletter
+% \let\@oldmaketitle\@maketitle% Store \@maketitle
 % \renewcommand{\@maketitle}{\@oldmaketitle% 
 
 % \includegraphics[width=.92\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
@@ -61,10 +62,10 @@
 
 \begin{abstract}
 
-People can understand sketches that vary in visual abstraction --- from detailed illustrations to schematic icons. 
+People can understand images that vary in visual abstraction --- from detailed illustrations to schematic icons. 
 To what degree are current vision algorithms sensitive to such variation when encoding their meaning? 
-We first obtained $>80K$ human-generated sketches ($N$=5,563 participants) produced under different time limits (4s, 8s, 16s, 32s) and AI-generated sketches \cite{vinker2022clipasso} produced under different ink limits (8, 16, 32 strokes)  of 2048 real-world objects spanning 128 categories from the THINGS database \cite{hebart2019things}.
-We then evaluated how 13 state-of-the-art vision algorithms varying in architecture and training represented the meaning of these sketches both at the category and exemplar levels without additional training.
+We first obtained $>80K$ human-generated sketches produced under different time limits (4s, 8s, 16s, 32s; $N$=5,563 participants) and AI-generated sketches \cite{vinker2022clipasso} produced under different ink limits (8, 16, 32 strokes)  of 2048 real-world objects spanning 128 categories from the THINGS dataset \cite{hebart2019things}.
+We then evaluated how 13 state-of-the-art vision algorithms varying in architecture and training represented the meaning of these sketches, both at the category and exemplar levels, and without additional training.
 We found that these models were generally sensitive to variation in visual abstraction, although some models were substantially more sensitive than others.
 Together, these findings suggest promising avenues for building better models of human visual abstraction. 
 
@@ -74,33 +75,58 @@ concepts; drawing; perception; computer vision; benchmark
 
 
 \section{Introduction}
-Humans can communicate their visual knowledge at varying levels of abstraction
 
+Humans can use pictures to convey what they perceive and know at varying levels of abstraction --- from detailed illustrations to simple sketches.
+Indeed, the ability to abstract away from the particulars of any given experience to highlight the most important elements is inherent in the act of creating any effective visualization \cite{viola2017pondering, chen2020foundations,mccloud1998understanding, mi2009abstraction, nan2011conjoining}.
+Line drawings present an especially important case study in the capacity for visual abstraction, as demonstrated by the Spanish artist Pablo Picasso in his work, \textit{The Bull} (1945), which contains 11 drawings of bulls, each successively more abstract than the last (Fig.~\ref{fig:bulls}).
+Despite striking variation in their degree of fidelity to the real world, understanding what even the most abstract of these images represent feels effortless for most human viewers.
+
+Such variation is not only manifest in works of art, but is pervasive across many domains of human activity. 
+% , line drawings present an important case study in visual abstraction given their versatility and ubiquity in human culture.
+Not only do most cultures produce drawings \cite{gombrich1995story}, the ability to produce line drawings that capture key aspects of the real world also emerges early in development \cite{karmiloff1990constraints, dillon2021rooms, long2021parallel}, and the visual properties of these drawings have been linked to children's developing conceptual knowledge \cite{tversky1989parts,huey2022developmental}. 
+Additionally, failures to produce and understand pictures of objects at different levels of abstraction is associated with semantic dementia \cite{bozeat2003duck, rogers2007object}, suggesting links between a robust capacity for visual abstraction and the functional organization of semantic knowledge in the brain. 
 % of the world—objects, scenes, and events—at varying levels of abstraction. 
 % Humans have the ability to visually communicate their knowledge of the world—objects, scenes, and events—at varying levels of abstraction. 
-% Famously, the Spanish artist Picasso could both depict scenes with incredible detail and attention towards preserving the likeness to the real world, as well as depict concepts like ``dog'' with only a single stroke by omitting much of the information that would help the sketch share a visual resemblance to a real dog. 
-Despite the striking differences in the level of detail and fidelity to the real world, both kinds of depictions can be understood and recognized by those who view them. 
-This notion that knowledge can be flexibly expressed and understood at many such levels of abstraction, while raised in prior work  \cite{viola2017pondering, chen2020foundations,mccloud1998understanding}, has evaded a generalized formal account. 
-As a consequence, it has remained unclear to what degree modern vision algorithms can support varied representations of the same underlying concept spanning multiple degrees of abstraction.
+% could both depict scenes with incredible detail and attention towards preserving the likeness to the real world, as well as depict concepts like ``dog'' with only a single stroke by omitting much of the information that would help the sketch share a visual resemblance to a real dog. 
+% The relevance and necessity to abstract visually across many different levels arises across many instances of visual communication.
+% In certain contexts, a faithful and detailed depiction might be what is required, such as when an architect conveys detailed schematics to an engineer \cite{suwa1997architects} or when a zoologist creates scientific illustrations of a new animal species \cite{baigrie1996picturing}. 
+% However in other contexts, such as when there exists established social conventions or when resources are limited (e.g., time), simpler depictions can be used to efficiently denote objects \cite{fan2020pragmatic, garrod2007foundations, hawkins2021visual}. 
+% Amongst these cases, one tool for visualization that might showcase the greatest variability in visual abstraction while being widely pervasive are line drawings \cite{sayim2011line}.
+What are the core visual computations that support this ability to grasp the meaning of pictures across so many different levels of visual abstraction? 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width= 0.8\linewidth]{figures/picasso_bulls.jpg}
+    \caption{Pablo Picasso. \textit{The Bull}, 1945.}
+    \label{fig:bulls}
+\end{figure}
+% both kinds of depictions can be understood and recognized by those who view them. 
+
+% This notion that knowledge can be flexibly expressed and understood at many such levels of abstraction, while raised in prior work  \cite{viola2017pondering, chen2020foundations,mccloud1998understanding}, has evaded a generalized formal account. 
+% As a consequence, it has remained unclear to what degree modern vision algorithms can support varied representations of the same underlying concept spanning multiple degrees of abstraction.
 
 % While many might agree that knowledge can be flexibly expressed and comprehended at such different levels of abstraction, a formal account of visual abstraction has remained largely absent in the .
-
-
 % For example, in the domain of sketching, a sketcher can choose to produce a highly-detailed realistic drawing or a simplified stylized drawing. 
 % From an observer's perspective, the former might be evocative of a specific flower, such as a rose, the latter might convey the general concept of 'flower'. 
 
-The relevance and necessity to abstract visually across many different levels arises across many instances of visual communication.
-In certain contexts, a faithful and detailed depiction might be what is required, such as when an architect conveys detailed schematics to an engineer \cite{suwa1997architects} or when a zoologist creates scientific illustrations of a new animal species \cite{baigrie1996picturing}. 
-However in other contexts, such as when there exists established social conventions or when resources are limited (e.g., time), simpler depictions can be used to efficiently denote objects \cite{fan2020pragmatic, garrod2007foundations, hawkins2021visual}. 
-Amongst these cases, one tool for visualization that might showcase the greatest variability in visual abstraction while being widely pervasive are line drawings \cite{sayim2011line}.
+% Thus, drawings are ubiquitous in culture and development, a window into learned semantics, and exhibit variation in perceived abstractness.
+% These properties make drawings of real-world objects a uniquely well-suited vehicle for understanding visual abstraction and developing common protocols for measurement of this construct across humans and machines mirroring similar efforts in cognitive science and AI \cite{bear2021physion}.
 
-Not only do most cultures produce drawings \cite{gombrich1995story}, the ability to produce simple, abstract line drawings of the real world also emerges early in development \cite{karmiloff1990constraints, dillon2021rooms, long2021parallel} and the visual properties of these drawings have been linked to children's developing conceptual knowledge \cite{tversky1989parts,huey2022developmental}. Additionally, it has been shown that a failure to flexibly draw \cite{bozeat2003duck} and recognize \cite{rogers2007object} objects at different levels of abstraction is associated with degradation of the brain's semantic system.
-Thus, drawings are ubiquitous in culture and development, a window into learned semantics, and exhibit variation in perceived abstractness.
-These properties make drawings of real-world objects a uniquely well-suited vehicle for understanding visual abstraction and developing common protocols for measurement of this construct across humans and machines mirroring similar efforts in cognitive science and AI \cite{bear2021physion}.
+The past several years have seen remarkable progress in uncovering the mechanisms by which the human visual system achieves a robust understanding of the visual world \cite{yamins2014performance, kriegeskorte2015deep, zhuang2021unsupervised, konkle2022self}. 
+These mechanistic models now often take the form of trainable neural networks combining several architectural motifs inspired by the primate ventral visual stream, including its hierarchical organization and local circuit properties \cite{gross1972visual,goodale1992separate,malach2002topography,hung2005fast}. %--- though not in all cases \cite{dosovitskiy2020image}.
+These advances have also recently been applied to the problem of sketch understanding, revealing both the value of these approaches to learning general-purpose perceptual representations to model human visual abstraction \cite{fan2018common, yu2017sketch, kubilius2016deep}, as well as persistent challenges in achieving the capacity for robust understanding of visual inputs that vary in their degree of visual abstraction \cite{baker2018abstract, singer2022photos, fan2020pragmatic}.
 
-A critical requirement for such efforts is a dataset depicting a sufficiently diverse set of objects at varying levels of abstraction. Using a time-restricted drawing paradigm, we present such a dataset of human-produced drawings depicting 2048 exemplars of 128 unique concepts. We also leverage recent advances in machine sketch-generation \cite{vinker2022clipasso} to create machine-produced drawings at varying levels of abstraction. Next, we evaluate a suite of modern vision algorithms which vary in their architectures, training paradigms, and training datasets, in their sensitivity to variations in abstraction. While we find many dimensions of variance across latent neural representations in their ability to capture variations in abstractness, we show that convolutional neural networks and models trained on semi-supervised learning methods are among the most sensitive to these variations.
 
-This serves as an important first step towards the systematic study of visual abstraction in both humans and machines.
+
+Despite these great strides in both the development of high-performing vision models, it remains unclear to what degree the specific models that have been proposed so far achieve human-like understanding of such a broad range of visual inputs, from natural images to human-generated drawings and symbols.
+Evaluating this question has been especially challenging given that, while there are now several widely used benchmark sketch datasets \cite{eitz2012sketch, jongejan2017quick, sangkloy2016sketchy}, none of these systematically vary the abstraction level of the sketches they contain. 
+
+Here we aim to take two major steps towards closing this gap: \textit{first,} we collected a large number of human-generated sketches produced under different time limits (4s, 8s, 16s, 32s; $N$=5,563 participants) and AI-generated sketches \cite{vinker2022clipasso} produced under different ink limits (8, 16, 32 strokes) of 2048 real-world objects spanning 128 categories from the THINGS dataset \cite{hebart2019things}. \textit{Second,} we conducted a systematic evaluation of how well several state-of-the-art vision algorithms, varying in their architecture and training, represent the meaning of these sketches, without additional training.
+Taken together, our study aims to provide a useful benchmark dataset and framework for probing sketch understanding in machines, and point to promising avenues for building better computational models of human visual abstraction in future work.
+
+% A critical requirement for such efforts is a dataset depicting a sufficiently diverse set of objects at varying levels of abstraction. Using a time-restricted drawing paradigm, we present such a dataset of human-produced drawings depicting 2048 exemplars of 128 unique concepts. We also leverage recent advances in machine sketch-generation \cite{vinker2022clipasso} to create machine-produced drawings at varying levels of abstraction. Next, we evaluate a suite of modern vision algorithms which vary in their architectures, training paradigms, and training datasets, in their sensitivity to variations in abstraction. While we find many dimensions of variance across latent neural representations in their ability to capture variations in abstractness, we show that convolutional neural networks and models trained on semi-supervised learning methods are among the most sensitive to these variations.
+
+% This serves as an important first step towards the systematic study of visual abstraction in both humans and machines.
 
 % This body of work from diverse areas of cognitive science lends support to the notion that
 
@@ -108,23 +134,27 @@ This serves as an important first step towards the systematic study of visual ab
 % \subsection{Computational models of vision}
 % Deep learning models, including convolutional neural networks (see \citeNP{li2021survey} for a review) and vision transformers \cite{dosovitskiy2020image}, are often considered the best contemporary models of human visual perception \cite{kriegeskorte2015deep,kubilius2019brain,lindsay2021deep} even in the domain of drawings \cite{fan2018common}. But how sensitive are these algorithms to semantic abstraction of the kinds described earlier? Here, we first collect a dataset of human and machine sketches .... spanning different levels of visual abstraction. Next, we evaluate representations extracted from a suite of vision models at various stages of processing (early, intermediate, and late) to measure their ability to represent visual concepts at different levels of abstraction using novel formalizations of visual abstraction.
 
-\section{Sketching at varying levels of abstraction}
-To develop a formalized account of visual abstraction in drawings, the current paper aims to achieve two key aims: 
-(1) to develop a large-scale dataset containing parallel human and machine generated drawings of visual object concepts that span varying levels of abstraction; 
-and (2) to evaluate the degree to which various computational models emulate drawing production behavior at such levels of abstraction. 
-In order to generate human drawings that spanned a variety of abstractions, we adapted a time-restricted drawing task used in work by \citeauthor{berger2013style} (2013) and asked people to produce drawings of objects in 4, 8, 16, and 32 seconds.
-Here we hypothesized that under time constraints, people would produce drawings that are not only less detailed but also more evocative of the general concept they were asked to draw, relative to a specific instance of that concept.
+% \section{Sketching at varying levels of abstraction}
+\section{Method}
+The current paper has two key aims: 
+(1) to develop a large dataset containing human and AI-generated sketches that vary in their degree of abstraction, for a wide variety of visual object concepts; 
+and (2) to evaluate how well various state-of-the-art vision models represent semantic information about these sketches, including information about the target object at the category and exemplar levels, without additional training. 
+
+% In order to generate human drawings that spanned a variety of abstractions, we adapted a time-restricted drawing task used in work by \citeauthor{berger2013style} (2013) and asked people to produce drawings of objects in 4, 8, 16, and 32 seconds.
+% Here we hypothesized that under time constraints, people would produce drawings that are not only less detailed but also more evocative of the general concept they were asked to draw, relative to a specific instance of that concept.
 
 \begin{figure*}
     \centering
     \includegraphics[width= 1\linewidth]{figures/VAB_task.pdf}
  
-    \caption{A. Examples of images from the THINGS128 image dataset, a subset of THINGS \cite{hebart2019things}. Each concept had 16 exemplar images that were used as referents in the time-restricted drawing task. B. Both humans and machines were shown the images from THINGS128, but humans were asked to create a sketch of the concept that was represented in photograph while the machine, a CLIP-based generative model \cite{vinker2022clipasso}, used the latent neural features of the image to guide a stroke-based rasterizer. C. Different sources of pressure, limited time in the case of humans and limited number of strokes in the case of the machine, led to sparser drawings in the more pressure-intensive conditions.}
+    \caption{A: The current study included a total of 2048 visual objects spanning 128 visual concepts from the THINGS dataset \cite{hebart2019things} B:
+    but humans were asked to create a sketch of the concept that was represented in photograph while the machine, a CLIP-based generative model \cite{vinker2022clipasso}, used the latent neural features of the image to guide a stroke-based rasterizer. C: Different sources of pressure, limited time in the case of humans and limited number of strokes in the case of the machine, led to sparser drawings in the more pressure-intensive conditions.}
 
     \label{fig:trial}
 \end{figure*}
 
-\subsection{THINGS initiative dataset}
+\subsection{Stimuli}
+% THINGS database
 To generate a diverse large-scale stimuli set of object concepts, we systematically sampled 128 concepts from the database of the THINGS initiative, a global database of 1,854 object concepts (e.g., ``chair'', ``elephant'', ``airplane'') and naturalistic object images aimed at developing a multi-varied cognitive neuroscience and behavioral metrics on a shared set of objects \cite{hebart2019things}. 
 Building on prior work by \citeauthor{yang2021visual} (2021) investigating visual abstraction across different contexts, we selected concepts based on similar parameters spanning four main axes of variation: familiarity, artificiality, animacy, and size. 
 Within each object concept, we randomly sampled 16 object images. 
@@ -150,7 +180,12 @@ Prior to drawing trials, participants were provided specific instructions that t
 Additionally, they were instructed not to include any background context (e.g., grass in a drawing of a ``horse''), arrows, or text.
 Participants also completed a practice trial before the test drawing trials to familiarize themselves to the drawing platform.
 
-
+\begin{figure*}
+    \centering
+    \includegraphics[width= 1\linewidth]{figures/thingsdraw_gallery_alpha.pdf}
+    \caption{Example sketches of objects from the THINGS128 dataset produced under different time limits.}
+    \label{fig:gallery}
+\end{figure*}
 
 \subsection{Machine generated sketches}
 For the automatic generation of sketches from images at multiple levels of abstraction, we incorporated CLIPasso \cite{vinker2022clipasso}.
@@ -392,6 +427,8 @@ While both metrics point towards semi-supervised and self-supervised training me
 
 
 \section{Discussion}
+
+Indeed, humans' ability to connect highly abstract visual tokens to meanings provides the basis for understanding not only pictorial representations \cite{hawkins2021visual, garrod2007foundations}, but also for the development of symbolic writing and numeral systems over time \cite{schmandt2010writing, chrisomalis2020reckonings}.
 
 \section{Acknowledgments}
 
