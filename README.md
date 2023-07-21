@@ -17,6 +17,7 @@ Directory Structure
 
 ```
 `paper` contains the LaTeX source code along with figures for our paper.
+
 `analysis` contains 3 main files -
 1. `analysis_nb.ipynb` is a jupyter notebook that contains code to reproduce the results we present in our submission with headers corresponding to the different sections in the paper.
 2. `linear_models.Rmd` is an R markdown notebook that contains additional analyses, specifically the results of mixed-effects models.
