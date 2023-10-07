@@ -1,0 +1,90 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{xcolor}
+
+\newcommand{\KM}[1]{\vspace{1em}{\color{orange}\noindent #1}}
+
+\usepackage{apacite}
+\begin{document}
+
+Dear Reviewers,
+
+XXXX\\
+
+\hrule
+
+
+\section*{Meta Reviewer review}
+
+Thank you for submitting your paper "" for consideration to the cognitive science conference. 
+I have received reviews from two researchers in the field and considered the paper myself. 
+The reviewers and I all agree that the paper is well  written and easy to follow. 
+We also see a good deal of merit in the work and find it very interesting. 
+I think the reviewers provide some excellent points for making the paper clearer and more accessible to a cognitive science audience. I will not repeat all their points, but I will draw your attention to a couple of points. 
+First, Reviewer 1 finds some issues with the data analysis that I agree might make the paper easier to interpret. 
+First, they suggest using ranking of images rather than appearance in a top ten, and then they suggest matching human and machines on stroke. 
+I think further explaining analysis choices (or adopting the reviewer's suggestions) would help the impact of the paper. 
+Second, reviewer 2 suggests expanding on the discussion of the various model architectures would help make the work more accessible to a wider audience at cogci. 
+While I know space is  tight, I would suggest dropping figure 1, and using the space to add a little more text.
+
+%\newpage
+\section*{Reviewer 1 review}
+
+\paragraph{The Review.}
+
+   This submission investigates how state-of-the-art vision models succeed in comprehending the meaning of human and machine drawn sketches. 
+   The authors compare 13 different vision models ability to identify specific exemplars and their categories from sketches drawn by humans and computers under various constraints.
+   For humans, the sketches were performed under different time constraints (e.g., within 4-32 seconds in humans. 
+   For computers, the sketches were done under constraints how many stokes these could use (e.g., 8-32 strokes in computers). 
+   The authors hypothesize that the under stronger constraints (e.g., less time to draw or less strokes to draw with) the human / computer generated sketches should become more abstract, which then would presumably influence the vision models’ performance. 
+   The results show that more detail (e.g., drawings that contain more detail due to humans having spent more time drawing them and computers having more strokes to produce them) lead to better exemplar identification as well as category identification, suggesting that the models are sensitive to the visual differences caused by resource constraints.
+
+   I think the submission is exceptionally well written and the concepts used are well presented and easily accessible to a wide audience. 
+   I also find that the remarkable amount of work that has gone into creating the visual stimuli is likely to be important for further studies on how abstraction is studied in state-of-the- art vision models. 
+   As an introduction of a methodological tool the submission is therefore likely to of interest for everyone working in the field.
+
+   In terms of the theoretical contribution to cognitive science I have some reservations. 
+   \begin{itemize}
+
+   \item  First, in the introduction the authors make a distinction between abstract and detailed sketches, and hypothesize that under constraints (such as short time) humans are likely to produce drawings that are more abstract. However, then in the results sections this seems not the be what they are testing. They look at individual models ability to identify specific exemplars and categories, never actually investigating the tradeoff between constraints and the abstract/specific continuum. Instead, they find that drawings under less stringent constraints produce better performance in both exemplar as well as category identification. It seems to me, that this then, is a direct contradiction of what the authors hypothesized and it would merit a discussion.
+
+   \KM{I think this is where we can introduce our new 'Abstraction' measure computed from word-word similarities and taking the dot product. I think overall we might want to step back from model-only analysis and match each model result to human recognition data}
+
+    \item Second, I have a question regarding the data analysis. The dependent variable in the present study is the percent of cases where the target image was in the top ten most likely outcomes. To me choosing top 10 cases seems arbitrary, one could as easily choose top 5 or top 20. As the authors obtain a ranking of otucomes, would it not make sense to just take the ranking of the correct target and use this a dependent variable, thus eliminating the subjective choice from the analysis and actually carrying out statistical analyses on raw data?
+    \KM{This would be replaced by training classifiers and comparing to human recog distributions and doing pearson cors on logits and spearman cors on rankings based on logits.}
+
+    \item Third, the human sketches are quantified in terms of time it was given to draw them. In contrast, computer generated sketches were quantified in terms of the strokes that were used to create them. Then, the first section of the results shows that when humans hard less time to create the sketches, they used fewer strokes. However, the rest of the results section only uses the time factor in statistical analyses. Why not also look at the number of strokes the humans used to create each sketch – so that the results between humans and machines might be more comparable?
+    \KM{We \textit{could} do all our analyses on number of strokes...}
+
+
+    \item Fourth, the models perform significantly worse on human drawings than computer drawings. Considering that the human drawings come from many many participants and the computer drawings from the same program, some of these differences might be simply be caused of visual variability in the human created stimuli. I think a discussion of this would be warranted.
+    \KM{I think this could just be a sentence in discussion if we wanted}
+
+   \end{itemize}
+
+%\newpage
+\section*{ Reviewer 2 review}
+
+\paragraph{The Review.}
+
+The authors evaluated 13 vision algorithms in their ability to classify human- and machine-generated sketches at different levels of abstraction. 
+This work makes an important contribution to the field as it is the first systematic investigation of a wide range of vision algorithms along the dimension of abstraction in drawings.
+Importantly, the study presents an impressive dataset of human and ai-generated sketches spanning various categories and abstraction levels, which will be useful for future research on computational models of visual perception and beyond. 
+The methods, including the selection of stimulus examples based on previous literature and the large sample as well as the statistical analysis, are sound.
+The results provide valuable insights into the classification of sketches at different levels of abstraction, especially concerning the difference in architecture and training method of the models, category and exemplar level classification, and human or AI-generated sketches. 
+
+\begin{itemize}
+
+ \item However, some explanations or discussions are missing regarding why there are differences between the different training methods or sketch sources.
+ \KM{I think stepping back from some of the architecture/training based analyses and just reporting \textit{all} models without breaking them up by arch or training might help address this}
+ \item Further, while in Figure 4 the purple line representing semi-supervised learning shows the greatest change in accuracy given the number of strokes (while supervised and self-supervised both show very little change; see also Figure 5), the authors write in their discussion “The effect of training, specifically self supervised learning methods, leads to the greatest sensitivity to visual abstraction.”, thus contradicting their figure. 
+ \KM{same as above}
+ \item It would be interesting to know, for example, what is a likely feature of the semi-supervised models compared to the others that could explain their greater sensitivity to abstraction. 
+ Similar explanations for differences in model architecture and human vs ai-generated sketches would be desirable. 
+ 
+ \item In general, a broad audience could find interest in this paper, given the importance of abstraction for human cognition in general and AI in particular, as well as the impressive dataset that is interesting for future studies. 
+However, similar to the previous point, given the sparse or missing explanations regarding what the differences in model architecture and training methods entail, especially regarding the results,  might restrict the paper’s use to a smaller group of experts in the field of vision algorithms. 
+\end{itemize}
+The paper is well-written and the paper's goals, methods, and results are clearly outlined. Overall, the paper represents a valuable contribution to the field, including a large dataset, but could benefit from more in-depth discussion of the results.
+
+\end{document}
